@@ -14,9 +14,7 @@
     <link rel='shortcut icon' type='image/x-icon' href='favicon.ico'>
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/bootstrap-switch.min.css">
-    <style>
-        @import "static/css/nav.css";
-    </style>
+    <style>@import "static/css/nav.css";</style>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
     <script src="static/js/bootstrap-switch.min.js"></script>
