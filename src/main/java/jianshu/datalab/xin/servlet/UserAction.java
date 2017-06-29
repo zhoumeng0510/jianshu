@@ -35,8 +35,8 @@ public class UserAction extends HttpServlet{
             return;
         }
 
-        if ("isNickExisted".equals(action)) {
-            isNickExisted(req, resp);
+        if ("isNickOrMobileExisted".equals(action)) {
+            isNickOrMobileExisted(req, resp);
             return;
         }
 
@@ -47,14 +47,29 @@ public class UserAction extends HttpServlet{
         String nick = req.getParameter("nick").trim();
         String mobile = req.getParameter("mobile").trim();
 
-        // TODO: 6/27/17 isNickExisted
+        if (nick.length() == 0) {
+            req.setAttribute("message", "请输入昵称");
+            req.getRequestDispatcher("sign_up.jsp").forward(req, resp);
+            return;
+        }
+
+        if (mobile.length() == 0) {
+            req.setAttribute("message", "请输入手机号");
+            req.getRequestDispatcher("sign_up.jsp").forward(req, resp);
+            return;
+        }
+
         if (isNickExisted(req, resp)) {
             req.setAttribute("message", "昵称 已经被使用");
             req.getRequestDispatcher("sign_up.jsp").forward(req, resp);
             return;
         }
 
-        // TODO: 6/27/17 isMobileExisted
+        if (isMobileExisted(req, resp)) {
+            req.setAttribute("message", "手机号 已经被使用");
+            req.getRequestDispatcher("sign_up.jsp").forward(req, resp);
+            return;
+        }
 
         StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
         String password = encryptor.encryptPassword(req.getParameter("password"));
@@ -86,38 +101,66 @@ public class UserAction extends HttpServlet{
         }
     }
 
+    /**
+     * for signUp
+     */
     private boolean isNickExisted(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String nick = req.getParameter("nick").trim();
+        return isExisted(req, resp, "nick", req.getParameter("nick").trim());
+    }
+
+    /**
+     * for signUp
+     */
+    private boolean isMobileExisted(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        return isExisted(req, resp, "mobile", req.getParameter("mobile").trim());
+    }
+
+    /**
+     * for AJAX
+     */
+    private void isNickOrMobileExisted(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String field = req.getParameter("field");
+        String value = req.getParameter("value").trim();
+
+        boolean isExisted = isExisted(req, resp, field, value);
+
+        resp.setContentType("application/json");
+        Writer writer = resp.getWriter();
+        Map<String, Object> map = new HashMap<>();
+        map.put("isExisted", isExisted);
+        writer.write(JSON.toJSONString(map));
+    }
+
+    private boolean isExisted(HttpServletRequest req, HttpServletResponse resp, String field, String value) throws ServletException, IOException {
         boolean isNickExisted = false;
+        boolean isMobileExisted = false;
 
         Connection connection = Db.getConnection();
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        String sql = "SELECT * FROM db_jianshu.user WHERE nick = ?";
+        String sql = "SELECT * FROM db_jianshu.user WHERE " + field + " = ?";
         try {
             if (connection != null) {
                 preparedStatement = connection.prepareStatement(sql);
             } else {
                 Error.showError(req, resp);
-                return false;
+                return false; // TODO: 6/29/17
             }
-            preparedStatement.setString(1, nick);
+            preparedStatement.setString(1, value);
             resultSet = preparedStatement.executeQuery();
-            isNickExisted = resultSet.next();
+
+            if (field.equals("nick")) {
+                isNickExisted = resultSet.next();
+            } else {
+                isMobileExisted = resultSet.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             Db.close(resultSet, preparedStatement, connection);
         }
 
-        resp.setContentType("application/json");
-        Writer writer = resp.getWriter();
-        Map<String, Object> map = new HashMap<>();
-        map.put("isNickExisted", isNickExisted);
-        String json = JSON.toJSONString(map);
-        writer.write(json);
-
-        return isNickExisted;
+        return isNickExisted || isMobileExisted;
     }
 
     @Override
