@@ -46,6 +46,11 @@ public class UserAction extends HttpServlet{
             return;
         }
 
+        if ("signOut".equals(action)) {
+            signOut(req, resp);
+            return;
+        }
+
         Error.showError(req, resp);
     }
 
@@ -167,8 +172,14 @@ public class UserAction extends HttpServlet{
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            Db.close(null, preparedStatement, connection);
+            Db.close(resultSet, preparedStatement, connection);
         }
+    }
+
+
+    private void signOut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getSession().invalidate();
+        resp.sendRedirect("default.jsp");
     }
 
     /**

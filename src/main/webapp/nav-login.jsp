@@ -1,3 +1,11 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: ASUS
+  Date: 2017.6.30
+  Time: 上午 11:22
+  To change this template use File | Settings | File Templates.
+--%>
+<%--<!DOCTYPE html>--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
@@ -29,9 +37,23 @@
                         <li></li>
                     </ul>
                 </li>
-                <li id="li-sign-in"><a id="nav-sign-in" href="sign_in.jsp">登录</a></li>
-                <li>
-                    <button id="nav-sign-up" class="btn btn-default navbar-btn">注册</button>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" style="padding: 9px;" href="">
+                        <img class="img-circle"
+                             style="border: 1px #9d9d9d solid;"
+                             src="static/image/${sessionScope.user.avatar}" alt="${sessionScope.user.nick}"
+                             width="32">
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" style="font-size: 16px">
+                        <li><a href="" style="padding: 15px 0;"><span style="color: #ea6f5a; margin: 0 20px;" class="glyphicon glyphicon-user"></span>我的主页</a></li>
+                        <li><a href="" style="padding: 15px 0;"><span style="color: #ea6f5a; margin: 0 20px;" class="glyphicon glyphicon-bookmark"></span>收藏的文章</a></li>
+                        <li><a href="" style="padding: 15px 0;"><span style="color: #ea6f5a; margin: 0 20px;" class="glyphicon glyphicon-heart"></span>喜欢的文章</a></li>
+                        <li><a href="" style="padding: 15px 0;"><span style="color: #ea6f5a; margin: 0 20px;" class="glyphicon glyphicon-inbox"></span>我的钱包</a></li>
+                        <li><a href="" style="padding: 15px 0;"><span style="color: #ea6f5a; margin: 0 20px;" class="glyphicon glyphicon-cog"></span>设置</a></li>
+                        <li><a href="" style="padding: 15px 0;"><span style="color: #ea6f5a; margin: 0 20px;" class="glyphicon glyphicon-list-alt"></span>帮助与反馈</a></li>
+                        <li><a href="user?action=signOut" style="padding: 15px 0;"><span style="color: #ea6f5a; margin: 0 20px;" class="glyphicon glyphicon-log-out"></span>退出</a></li>
+                    </ul>
                 </li>
                 <li>
                     <button id="write-note" class="btn btn-danger navbar-btn"><i class="glyphicon glyphicon-pencil"></i>

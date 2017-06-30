@@ -135,12 +135,14 @@
             <input type='hidden' name='action' value='signIn'>
             <div class='input-group'>
                 <span class='input-group-addon'><i class='glyphicon glyphicon-phone'></i></span>
-                <input id="mobile" name='mobile' class='form-control input-lg' type='text' placeholder='手机号或邮箱'>
+                <input id="mobile" name='mobile' class='form-control input-lg' type='text' placeholder='手机号或邮箱'
+                       value="18612345678">
             </div>
             <small id='mobile-message'></small>
             <div class='input-group'>
                 <span class='input-group-addon'><i class='glyphicon glyphicon-lock'></i></span>
-                <input id="password" name='password' class='form-control input-lg' type='password' placeholder='密码'>
+                <input id="password" name='password' class='form-control input-lg' type='password' placeholder='密码'
+                       value="123">
             </div>
             <small id='password-message'></small>
             <div class="checkbox">
