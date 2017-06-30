@@ -145,7 +145,7 @@
 <div class='container'>
     <div id='logo'><img src='static/image/logo.png' alt='简书'></div>
     <div id='form-box' class='col-md-4 col-md-offset-4'>
-        <h3 class='text-center'><a class='text-muted' href=''>登录</a> · <a id='sign-up' href=''>注册</a></h3>
+        <h3 class='text-center'><a class='text-muted' href='sign_in.jsp'>登录</a> · <a id='sign-up' href=''>注册</a></h3>
         <form id="sign-up-form" class='form-horizontal' action='user' method='post'>
             <input type='hidden' name='action' value='signUp'>
             <div class='input-group'>
@@ -168,7 +168,7 @@
                 <small>点击 “注册” 即表示您同意并愿意遵守简书</small>
             </p>
             <p class='text-center'>
-                <small><a href=''>用户协议</a> 和 <a href=''>隐私政策</a> 。</small>
+                <small><a href='http://www.jianshu.com/p/c44d171298ce'>用户协议</a> 和 <a href='http://www.jianshu.com/p/2ov8x3'>隐私政策</a> 。</small>
             </p>
         </form>
         <small class="text-danger">${requestScope.message}</small>
