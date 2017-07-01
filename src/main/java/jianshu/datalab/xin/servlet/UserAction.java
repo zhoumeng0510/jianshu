@@ -1,6 +1,7 @@
 package jianshu.datalab.xin.servlet;
 
 import com.alibaba.fastjson.JSON;
+import com.google.code.kaptcha.Constants;
 import jianshu.datalab.xin.model.User;
 import jianshu.datalab.xin.util.Db;
 import jianshu.datalab.xin.util.Error;
@@ -26,7 +27,7 @@ import java.util.Map;
  * 下午 05:14.
  */
 @WebServlet(urlPatterns = "/user")
-public class UserAction extends HttpServlet{
+public class UserAction extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
@@ -48,6 +49,11 @@ public class UserAction extends HttpServlet{
 
         if ("signOut".equals(action)) {
             signOut(req, resp);
+            return;
+        }
+
+        if ("checkValidCode".equals(action)) {
+            checkValidCode(req, resp);
             return;
         }
 
@@ -120,6 +126,13 @@ public class UserAction extends HttpServlet{
     }
 
     private void signIn(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        if (!checkValidCode(req, resp)) {
+            req.setAttribute("message", "验证码错误");
+            req.getRequestDispatcher("sign_in.jsp").forward(req, resp);
+            return;
+        }
+
         String mobile = req.getParameter("mobile").trim();
         String plainPassword = req.getParameter("password");
 
@@ -142,7 +155,6 @@ public class UserAction extends HttpServlet{
                 String encryptedPassword = resultSet.getString("password");
                 StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
                 if (encryptor.checkPassword(plainPassword, encryptedPassword)) {
-
                     User user = new User(
                             resultSet.getInt("id"),
                             resultSet.getString("nick"),
@@ -242,6 +254,23 @@ public class UserAction extends HttpServlet{
         }
 
         return isNickExisted || isMobileExisted;
+    }
+
+    private boolean checkValidCode(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String kaptchaReceived = req.getParameter("kaptchaReceived");
+        String kaptchaExpected = (String) req.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
+        System.out.println(kaptchaExpected);
+        resp.setContentType("application/json");
+        Writer writer = resp.getWriter();
+        Map<String, Boolean> map = new HashMap<>();
+
+        if (kaptchaExpected.equalsIgnoreCase(kaptchaReceived)) {
+            map.put("isValid", true);
+        } else {
+            map.put("isValid", false);
+        }
+        writer.write(JSON.toJSONString(map));
+        return map.get("isValid");
     }
 
     @Override

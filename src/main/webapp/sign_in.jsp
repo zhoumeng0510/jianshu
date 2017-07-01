@@ -50,6 +50,9 @@
         #password-message {
             display: none;
         }
+        #kaptchaImg {
+            cursor: pointer;
+        }
     </style>
     <script src='static/js/jquery.min.js'></script>
     <script src='static/js/bootstrap.min.js'></script>
@@ -58,6 +61,7 @@
     <script>
         var isMobileValidated; // 手机号通过了验证
         var isPasswordValidated; // 密码通过了验证
+        var isKaptchaValidated; // 密码通过了验证
         function showMessage(element, text, removedClass, addedClass) {
             element.parent()
                 .removeClass(removedClass[0])
@@ -96,13 +100,28 @@
                 isPasswordValidated = true;
             }
         }
+        function validateKaptcha() {
+            var kaptcha = $('#kaptcha');
+            if (kaptcha.val().length === 0) {
+                showMessage(
+                    kaptcha,
+                    '请输入验证码',
+                    ['has-success', 'text-success'],
+                    ['has-error', 'text-danger']
+                );
+                isKaptchaValidated = false;
+            } else {
+                isKaptchaValidated = true;
+            }
+        }
         $(function () {
             $('#li-index').removeClass('active');
             $('#li-sign-in').addClass('active');
             $('#sign-in-form').submit(function () {
                 validateMobile();
                 validatePassword();
-                return isMobileValidated && isPasswordValidated;
+                validateKaptcha();
+                return isMobileValidated && isPasswordValidated && isKaptchaValidated;
             });
             $('#mobile').focus(function () {
                 showMessage(
@@ -119,6 +138,46 @@
                     ['has-error', 'text-danger'],
                     []
                 );
+            });
+            var kaptcha = $('#kaptcha');
+            kaptcha.focus(function () {
+                showMessage(
+                    kaptcha,
+                    '',
+                    ['has-error', 'text-danger'],
+                    []
+                );
+            });
+            $('#kaptchaImg').click(function () {
+                $(this)
+                    .hide()
+                    .attr('src', '/kaptcha.jpg?' + Math.floor(Math.random() * 100))
+                    .fadeIn();
+            });
+            kaptcha.blur(function () {
+                $.ajax({
+                    url: 'user',
+                    type: 'post',
+                    data: {'action': 'checkValidCode', 'kaptchaReceived': kaptcha.val()},
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.isValid) {
+                            showMessage(
+                                kaptcha,
+                                '验证码正确',
+                                ['has-error', 'text-danger'],
+                                ['has-success', 'text-success']
+                            );
+                        } else {
+                            showMessage(
+                                kaptcha,
+                                '验证码错误',
+                                ['has-success', 'text-success'],
+                                ['has-error', 'text-danger']
+                            );
+                        }
+                    }
+                });
             });
         });
     </script>
@@ -145,6 +204,15 @@
                        value="123">
             </div>
             <small id='password-message'></small>
+            <div class="input-group">
+                <img id="kaptchaImg" src="kaptcha.jpg" alt="">
+            </div>
+            <div class='input-group'>
+                <span class='input-group-addon'><i class='glyphicon glyphicon-check'></i></span>
+                <input id="kaptcha" name='kaptchaReceived' class='form-control input-lg' type='text' placeholder='验证码'
+                       value="123">
+            </div>
+            <small id='password-kaptcha'></small>
             <div class="checkbox">
                 <label class="text-muted"><input type="checkbox" checked="checked"> 记住我</label>
                 <a class="pull-right text-muted" href="">登录遇到问题？</a>
